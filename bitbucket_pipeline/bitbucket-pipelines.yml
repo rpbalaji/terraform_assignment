@@ -1,0 +1,54 @@
+# This is an example Starter pipeline configuration
+# Use a skeleton to build, test and deploy using manual and parallel steps
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+
+image: atlassian/default-image:3
+
+pipelines:
+  default:
+      - step:
+          name: 'service 1 image build'
+          service:
+            - docker
+          script:
+            - echo "Your build and test goes here..."
+            - apt-get update && apt-get install -y awscli 
+            - aws configure set default.region $AWS_DEFAULT_REGION
+            - aws configure set aws_access_key_id $AWS_KEY
+            - aws configure set aws_secret_access_key $AWS_SECRET
+            - $(aws ecr get-login --no-include-email --region us-east-1 --registry=136374005149)
+            - cd service1 
+            - docker build -t  136374005149.dkr.ecr.us-east-1.amazonaws.com/service1:latest  .
+            - docker push 136374005149.dkr.ecr.us-east-1.amazonaws.com/service1:latest
+            - cd ../service2 
+            - docker build -t  136374005149.dkr.ecr.us-east-1.amazonaws.com/service2:latest .
+   
+
+    # The following deployment steps will be executed for each pipeline run. To configure your steps and conditionally deploy see https://support.atlassian.com/bitbucket-cloud/docs/configure-bitbucket-pipelinesyml/
+      - step:
+          name: 'Deployment to service1'      
+          oidc: true
+          script:
+            - pipe: atlassian/aws-ecs-deploy:1.6.1
+              variables:
+                AWS_OIDC_ROLE_ARN: 'arn:aws:iam::136374005149:role/bitbucketuser-oidc'
+                AWS_DEFAULT_REGION: 'us-east-1'
+                CLUSTER_NAME: 'service1'
+                SERVICE_NAME: 'service1_ser'
+                FORCE_NEW_DEPLOYMENT: 'true'
+
+      - step:
+          name: 'Deployment to srevice2'
+          oidc: true
+          script:
+            - pipe: atlassian/aws-ecs-deploy:1.6.1
+              variables:
+                AWS_OIDC_ROLE_ARN: 'arn:aws:iam::136374005149:role/bitbucketuser-oidc'
+                AWS_DEFAULT_REGION: 'us-east-1'
+                CLUSTER_NAME: 'service2'
+                SERVICE_NAME: 'service2_ser'
+                FORCE_NEW_DEPLOYMENT: 'true'
+
+options:
+  docker: true
