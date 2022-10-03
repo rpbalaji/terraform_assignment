@@ -30,7 +30,7 @@ pipelines:
 
     # The following deployment steps will be executed for each pipeline run. To configure your steps and conditionally deploy see https://support.atlassian.com/bitbucket-cloud/docs/configure-bitbucket-pipelinesyml/
       - step:
-          name: 'Deployment to service1'      
+          name: 'Deployment to service1 and here'      
           oidc: true
           script:
             - pipe: atlassian/aws-ecs-deploy:1.6.1
