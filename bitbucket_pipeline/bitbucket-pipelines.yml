@@ -5,6 +5,9 @@
 
 image: atlassian/default-image:3
 
+
+
+
 pipelines:
   default:
       - step:
@@ -12,7 +15,7 @@ pipelines:
           service:
             - docker
           script:
-            - echo "Your build and test goes here..."
+            - echo "Your build and tesasdt goes here..."
             - apt-get update && apt-get install -y awscli 
             - aws configure set default.region $AWS_DEFAULT_REGION
             - aws configure set aws_access_key_id $AWS_KEY
