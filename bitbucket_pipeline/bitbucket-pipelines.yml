@@ -15,7 +15,7 @@ pipelines:
           service:
             - docker
           script:
-            - echo "Your build and tesasdt goes here..."
+            - echo "Your build and tesasdt goes here... and one more"
             - apt-get update && apt-get install -y awscli 
             - aws configure set default.region $AWS_DEFAULT_REGION
             - aws configure set aws_access_key_id $AWS_KEY
